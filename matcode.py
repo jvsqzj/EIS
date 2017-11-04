@@ -1,8 +1,9 @@
 
 import numpy as np
 import numpy.linalg as lalg
+import plotly
 import plotly.plotly as py
-import plotly.graph_objs as go
+from plotly.graph_objs import *
 import csv
 
 def CSVmatrix(filename):
@@ -32,6 +33,37 @@ def complexMatrix(iM):
         cM.append([[re[0]+1j*im[0],re[1]+1j*im[1]],[re[2]+1j*im[2],re[3]+1j*im[3]]])
     return cM
 
+matrix = CSVmatrix('thru.csv')
+
+freq = []
+for i in range(1,len(matrix)):
+    freq.append(matrix[i][0])
+
+matrix = complexMatrix(matrix)
+
+s11 = []
+for i in range(len(matrix)):
+    s11.append(matrix[i][0][0])
+
+s11 = np.absolute(s11)
+
+trace0 = Scatter(
+    x=freq,
+    y=s11
+)
+
+data = Data([trace0])
+
+plotly.offline.plot({
+    "data": [trace0],
+    "layout": Layout(title="hello world")
+})
+
+#data = Data([freq,s11])
+
+#py.plot(data, filename='s11')
+
+'''
 x = CSVmatrix('thru.csv')
 cM = complexMatrix(x)
 #two = [[cM[0][1][1],-1*cM[0][0][1]],[0,1]]
@@ -41,3 +73,4 @@ print cM[0]
 print one
 identity = np.array(cM[0])*np.array(one)
 print np.absolute(identity)
+'''
