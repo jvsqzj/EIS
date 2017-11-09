@@ -33,6 +33,22 @@ def complexMatrix(iM):
         cM.append([[re[0]+1j*im[0],re[1]+1j*im[1]],[re[2]+1j*im[2],re[3]+1j*im[3]]])
     return cM
 
+#This function gets Y_Lpad from Y admitance matrix
+def Y_getLpad_A(Y):
+    Y_Lpad =  [[ Y[1][1] - Y[2][1] ,  2*Y[2][1] ],
+               [     2*Y[2][1]     , -2*Y[2][1] ]
+    return Y_Lpad
+
+
+#This function gets Y_Rpad from Y admitance matrix
+def Y_getRpad_A(Y):
+    Y_Rpad =  [[ -2*Y[1][2] ,     2*Y[1][2]     ],
+               [  2*Y[1][2] , Y[2][2] - Y[1][2] ]
+    return Y_Rpad
+
+#def Rsweep(A):
+
+
 matrix = CSVmatrix('thru.csv')
 
 freq = []
@@ -44,6 +60,9 @@ matrix = complexMatrix(matrix)
 s11 = []
 for i in range(len(matrix)):
     s11.append(matrix[i][0][0])
+
+
+#THIS SECTION PLOTS MAGNITUDES OF S11 IN FREQ
 
 s11 = np.absolute(s11)
 
@@ -58,6 +77,7 @@ plotly.offline.plot({
     "data": [trace0],
     "layout": Layout(title="hello world")
 })
+
 
 #data = Data([freq,s11])
 
