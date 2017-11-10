@@ -120,6 +120,9 @@ s21 = []
 s22 = []
 for i in range(len(Sparam)):
     s11.append(Sparam[i][0][0])
+    s12.append(Sparam[i][0][1])
+    s21.append(Sparam[i][1][0])
+    s22.append(Sparam[i][1][1])
 
 s11 = np.absolute(s11)
 s12 = np.absolute(s12)
