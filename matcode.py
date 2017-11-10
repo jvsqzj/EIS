@@ -96,6 +96,19 @@ def DeEmbeddingSweep(tM,thru):
 
 #def Rsweep(A):
 
+def plotMatrixSweep(domain,A,title,label1,label2,label3,label4,labelx,labely):
+    a = []
+    b = []
+    c = []
+    d = []
+    for i in range(len(A)):
+        a.append(A[i][0][0])
+        b.append(A[i][0][1])
+        c.append(A[i][1][0])
+        d.append(A[i][1][1])
+
+
+
 thru = CSVmatrix('thru.csv')  ##This is the Y matrix of the thru DeEmbedding fixture
 sM = CSVmatrix('DUT.csv')    ##this is the S matrix of the Measured device
 
