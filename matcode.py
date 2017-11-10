@@ -96,7 +96,7 @@ def DeEmbeddingSweep(tM,thru):
 
 #def Rsweep(A):
 
-def plotMatrixSweep(domain,A,title,label1,label2,label3,label4,labelx,labely):
+def plotMatrixMagdBSweep(domain,A,title,label1,label2,label3,label4,labelx,labely):
     a = []
     b = []
     c = []
@@ -106,8 +106,49 @@ def plotMatrixSweep(domain,A,title,label1,label2,label3,label4,labelx,labely):
         b.append(A[i][0][1])
         c.append(A[i][1][0])
         d.append(A[i][1][1])
+    a = 20*np.log10(np.absolute(a))
+    b = 20*np.log10(np.absolute(b))
+    c = 20*np.log10(np.absolute(c))
+    d = 20*np.log10(np.absolute(d))
 
+    trace0 = Scatter(
+        x=domain,
+        y=a,
+        name = label1
+    )
+    trace1 = Scatter(
+        x=domain,
+        y=b,
+        name = label2
+    )
+    trace2 = Scatter(
+        x=domain,
+        y=c,
+        name = label3
+    )
+    trace3 = Scatter(
+        x=domain,
+        y=d,
+        name = label4
+    )
 
+#The Layout object will define the look of the plot,
+#and plot features which are unrelated to the data.
+#So we will be able to change things like the title,
+#axis titles, spacing, font and even draw shapes on
+#top of your plot! In our case,
+
+#In [89]:
+#layout=go.Layout(title="First Plot", xaxis={'title':'x1'}, yaxis={'title':'x2'})
+#layout
+
+#Out[89]:
+#{'title': 'First Plot', 'xaxis': {'title': 'x1'}, 'yaxis': {'title': 'x2'}}
+
+    plotly.offline.plot({
+        "data": [trace0,trace1,trace2,trace3],
+        "layout": Layout(title=title, xaxis={'title':labelx}, yaxis={'title':labelx})
+    })
 
 thru = CSVmatrix('thru.csv')  ##This is the Y matrix of the thru DeEmbedding fixture
 sM = CSVmatrix('DUT.csv')    ##this is the S matrix of the Measured device
@@ -125,66 +166,9 @@ for i in range(len(sM)):
 Sparam = DeEmbeddingSweep(sM, thru)
 
 
-#THIS SECTION PLOTS MAGNITUDES OF S parameters IN FREQ
+plotMatrixMagdBSweep(freq, thru, 'Y matrix thru', 'Y11','Y12','Y21','Y22','Frequency','Admitance (dB)')
 
-s11 = []
-s12 = []
-s21 = []
-s22 = []
-for i in range(len(Sparam)):
-    s11.append(Sparam[i][0][0])
-    s12.append(Sparam[i][0][1])
-    s21.append(Sparam[i][1][0])
-    s22.append(Sparam[i][1][1])
 
-s11 = 20*np.log10(np.absolute(s11))
-s12 = 20*np.log10(np.absolute(s12))
-s21 = 20*np.log10(np.absolute(s21))
-s22 = 20*np.log10(np.absolute(s22))
-
-trace0 = Scatter(
-    x=freq,
-    y=s11
-)
-
-trace1 = Scatter(
-    x=freq,
-    y=s12
-)
-
-trace2 = Scatter(
-    x=freq,
-    y=s21
-)
-
-trace3 = Scatter(
-    x=freq,
-    y=s22
-)
-
-data = Data([trace0])
-
-plotly.offline.plot({
-    "data": [trace0,trace1,trace2,trace3],
-    "layout": Layout(title="S parameters", xaxis={'title':'Frequency (GHz)'}, yaxis={'title':'Scattering (dB)'})
-})
-
-"""
-
-The Layout object will define the look of the plot,
-and plot features which are unrelated to the data.
-So we will be able to change things like the title,
-axis titles, spacing, font and even draw shapes on
-top of your plot! In our case,
-
-In [89]:
-layout=go.Layout(title="First Plot", xaxis={'title':'x1'}, yaxis={'title':'x2'})
-layout
-
-Out[89]:
-{'title': 'First Plot', 'xaxis': {'title': 'x1'}, 'yaxis': {'title': 'x2'}}
-
-"""
 
 #data = Data([freq,s11])
 
