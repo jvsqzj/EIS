@@ -1,9 +1,9 @@
 
-import numpy as np
-import numpy.linalg as lalg
-import plotly
-import plotly.plotly as py
-from plotly.graph_objs import *
+#import numpy as np
+#import numpy.linalg as lalg
+#import plotly
+#import plotly.plotly as py
+#from plotly.graph_objs import *
 import csv
 
 def CSVmatrix(filename):
@@ -36,21 +36,46 @@ def complexMatrix(iM):
 #This function gets Y_Lpad from Y admitance matrix
 def Y_getLpad_A(Y):
     Y_Lpad =  [[ Y[1][1] - Y[2][1] ,  2*Y[2][1] ],
-               [     2*Y[2][1]     , -2*Y[2][1] ]
+               [     2*Y[2][1]     , -2*Y[2][1] ]]
     return Y_Lpad
-
 
 #This function gets Y_Rpad from Y admitance matrix
 def Y_getRpad_A(Y):
     Y_Rpad =  [[ -2*Y[1][2] ,     2*Y[1][2]     ],
-               [  2*Y[1][2] , Y[2][2] - Y[1][2] ]
+               [  2*Y[1][2] , Y[2][2] - Y[1][2] ]]
     return Y_Rpad
 
 def getTfromY(Y):
-    T = [[,],[,]]
+    detY = Y[1][1]*Y[2][2]-Y[1][2]Y[2][1]
+    T = [[-Y[2][2]/Y[2][1],   -1/Y[2][1]   ],
+         [ -detY/Y[2][1]  ,-Y[1][1]/Y[2][1]]]
+    return T
+
+def T_Deembed(TLinv, TMeas, TRinv):
+    a = TMeas[1][1]
+    b = TMeas[1][2]
+    c = TMeas[2][1]
+    d = TMeas[2][2]
+    T_dut = [[(a*L[1][1]+c*L[1][2])*R[1][1]+(b*L[1][1]+d*L[1][2])*R[2][1],(a*L[1][1]+c*L[1][2])*R[1][2]+(b*L[1][1]+d*L[1][2])*R[2][1]],
+             [(a*L[2][1]+c*L[2][2])*R[1][1]+(b*L[2][1]+d*L[2][2])*R[2][1],(a*L[2][1]+c*L[2][2])*R[1][2]+(b*L[1][1]+d*L[1][2])*R[2][1]]]
+    return T_dut
+
+def SfromT(T):
+    s11 = T[1][2]/T[2][2]
+    s12 = (T[1][1]-T[2][2])/T[2][2]
+    s21 = 1/T[2][2]
+    s22 = -T[2][1]/T[2][2]
+    S = [[s11,s12],
+         [s21,s22]]
+
+
+#M y Thru deben ser matrices del mismo tamaño para utilizar esta función
+def DeEmbedding(M,Thru):
+
+    for i in range(len(M)):
+
 
 #def Rsweep(A):
-
 
 matrix = CSVmatrix('thru.csv')
 
@@ -66,7 +91,7 @@ for i in range(len(matrix)):
 
 
 #THIS SECTION PLOTS MAGNITUDES OF S11 IN FREQ
-
+"""
 s11 = np.absolute(s11)
 
 trace0 = Scatter(
@@ -81,7 +106,7 @@ plotly.offline.plot({
     "layout": Layout(title="hello world")
 })
 
-
+"""
 #data = Data([freq,s11])
 
 #py.plot(data, filename='s11')
