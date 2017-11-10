@@ -166,8 +166,25 @@ data = Data([trace0])
 
 plotly.offline.plot({
     "data": [trace0,trace1,trace2,trace3],
-    "layout": Layout(title="hello world")
+    "layout": Layout(title="S parameters", xaxis={'title':'Frequency (GHz)'}, yaxis={'title':'Scattering (dB)'})
 })
+
+"""
+
+The Layout object will define the look of the plot,
+and plot features which are unrelated to the data.
+So we will be able to change things like the title,
+axis titles, spacing, font and even draw shapes on
+top of your plot! In our case,
+
+In [89]:
+layout=go.Layout(title="First Plot", xaxis={'title':'x1'}, yaxis={'title':'x2'})
+layout
+
+Out[89]:
+{'title': 'First Plot', 'xaxis': {'title': 'x1'}, 'yaxis': {'title': 'x2'}}
+
+"""
 
 #data = Data([freq,s11])
 
