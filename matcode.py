@@ -47,7 +47,7 @@ def Y_getRpad(Y):
     return Y_Rpad
 
 def getTfromY(Y):
-    detY = Y[1][1]*Y[2][2]-Y[1][2]Y[2][1]
+    detY = Y[1][1]*Y[2][2]-Y[1][2]*Y[2][1]
     T = [[-Y[2][2]/Y[2][1],   -1/Y[2][1]   ],
          [ -detY/Y[2][1]  ,-Y[1][1]/Y[2][1]]]
     return T
