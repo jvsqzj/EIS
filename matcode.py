@@ -1,9 +1,10 @@
 
 #import numpy as np
 #import numpy.linalg as lalg
-#import plotly
-#import plotly.plotly as py
-#from plotly.graph_objs import *
+import plotly
+plotly.tools.set_credentials_file(username='jvsqzj', api_key='xl7rKrwa7iAfeT2SjWhG')
+import plotly.plotly as py
+from plotly.graph_objs import *
 import csv
 
 def CSVmatrix(filename):
@@ -34,13 +35,13 @@ def complexMatrix(iM):
     return cM
 
 #This function gets Y_Lpad from Y admitance matrix
-def Y_getLpad_A(Y):
+def Y_getLpad(Y):
     Y_Lpad =  [[ Y[1][1] - Y[2][1] ,  2*Y[2][1] ],
                [     2*Y[2][1]     , -2*Y[2][1] ]]
     return Y_Lpad
 
 #This function gets Y_Rpad from Y admitance matrix
-def Y_getRpad_A(Y):
+def Y_getRpad(Y):
     Y_Rpad =  [[ -2*Y[1][2] ,     2*Y[1][2]     ],
                [  2*Y[1][2] , Y[2][2] - Y[1][2] ]]
     return Y_Rpad
@@ -68,45 +69,85 @@ def SfromT(T):
     S = [[s11,s12],
          [s21,s22]]
 
+def TfromS(S):
+    A = -(S[1][1]*S[2][2]-S[1][2]S[2][1])/S[2][1]
+    B = S[1][1]/S[2][1]
+    C = -S[2][2]/S[2][1]
+    D = 1/S[2][1]
+    T = [[A,B],[C,D]]
+    return T
 
 #M y Thru deben ser matrices del mismo tamaño para utilizar esta función
-def DeEmbedding(M,Thru):
-
+def DeEmbeddingSweep(tM,thru):
+    S = []
     for i in range(len(M)):
+        YL = Y_getLpad(thru[i])
+        YR = Y_getRpad(thru[i])
+        TL = inv(getTfromY(YL[i]))
+        TR = inv(getTfromY(YR[i]))
+        S.append(SfromT(T_Deembed(TL,tM[i],TR)))
+    return S
+
 
 
 #def Rsweep(A):
 
-matrix = CSVmatrix('thru.csv')
+thru = CSVmatrix('thru.csv')  ##This is the Y matrix of the thru DeEmbedding fixture
+sM = CSVmatrix('DUT.csv')    ##this is the S matrix of the Measured device
 
 freq = []
-for i in range(1,len(matrix)):
-    freq.append(matrix[i][0])
+for i in range(1,len(thru)):
+    freq.append(thru[i][0])
 
-matrix = complexMatrix(matrix)
+thru = complexMatrix(thru)
+sM = complexMatrix(sM)
 
-s11 = []
-for i in range(len(matrix)):
-    s11.append(matrix[i][0][0])
+for i in range(len(sM)):
+    sM[i] = TfromS(sM[i])
 
+Sparam = DeEmbeddingSweep(sM, thru)
 
 #THIS SECTION PLOTS MAGNITUDES OF S11 IN FREQ
-"""
+
+s11 = []
+s12 = []
+s21 = []
+s22 = []
+for i in range(len(Sparam)):
+    s11.append(Sparam[i][0][0])
+
 s11 = np.absolute(s11)
+s12 = np.absolute(s12)
+s21 = np.absolute(s21)
+s22 = np.absolute(s22)
 
 trace0 = Scatter(
     x=freq,
     y=s11
 )
 
+trace1 = Scatter(
+    x=freq,
+    y=s12
+)
+
+trace2 = Scatter(
+    x=freq,
+    y=s21
+)
+
+trace3 = Scatter(
+    x=freq,
+    y=s22
+)
+
 data = Data([trace0])
 
 plotly.offline.plot({
-    "data": [trace0],
+    "data": [trace0,trace1,trace2,trace3],
     "layout": Layout(title="hello world")
 })
 
-"""
 #data = Data([freq,s11])
 
 #py.plot(data, filename='s11')
