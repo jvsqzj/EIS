@@ -112,7 +112,7 @@ for i in range(len(sM)):
 Sparam = DeEmbeddingSweep(sM, thru)
 
 
-#THIS SECTION PLOTS MAGNITUDES OF S11 IN FREQ
+#THIS SECTION PLOTS MAGNITUDES OF S parameters IN FREQ
 
 s11 = []
 s12 = []
@@ -124,10 +124,10 @@ for i in range(len(Sparam)):
     s21.append(Sparam[i][1][0])
     s22.append(Sparam[i][1][1])
 
-s11 = np.absolute(s11)
-s12 = np.absolute(s12)
-s21 = np.absolute(s21)
-s22 = np.absolute(s22)
+s11 = 20*np.log10(np.absolute(s11))
+s12 = 20*np.log10(np.absolute(s12))
+s21 = 20*np.log10(np.absolute(s21))
+s22 = 20*np.log10(np.absolute(s22))
 
 trace0 = Scatter(
     x=freq,
