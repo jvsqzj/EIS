@@ -1,6 +1,6 @@
 
-#import numpy as np
-#import numpy.linalg as lalg
+import numpy as np
+import numpy.linalg as lalg
 import plotly
 plotly.tools.set_credentials_file(username='jvsqzj', api_key='xl7rKrwa7iAfeT2SjWhG')
 import plotly.plotly as py
@@ -36,56 +36,60 @@ def complexMatrix(iM):
 
 #This function gets Y_Lpad from Y admitance matrix
 def Y_getLpad(Y):
-    Y_Lpad =  [[ Y[1][1] - Y[2][1] ,  2*Y[2][1] ],
-               [     2*Y[2][1]     , -2*Y[2][1] ]]
+    Y_Lpad =  [[ Y[0][0] - Y[1][0] ,  2*Y[1][0] ],
+               [     2*Y[1][0]     , -2*Y[1][0] ]]
     return Y_Lpad
 
 #This function gets Y_Rpad from Y admitance matrix
 def Y_getRpad(Y):
-    Y_Rpad =  [[ -2*Y[1][2] ,     2*Y[1][2]     ],
-               [  2*Y[1][2] , Y[2][2] - Y[1][2] ]]
+    Y_Rpad =  [[ -2*Y[0][1] ,     2*Y[0][1]     ],
+               [  2*Y[0][1] , Y[1][1] - Y[0][1] ]]
     return Y_Rpad
 
 def getTfromY(Y):
-    detY = Y[1][1]*Y[2][2]-Y[1][2]*Y[2][1]
-    T = [[-Y[2][2]/Y[2][1],   -1/Y[2][1]   ],
-         [ -detY/Y[2][1]  ,-Y[1][1]/Y[2][1]]]
+    T = [[-Y[1][1] / Y[1][0],   -1/Y[1][0]   ],
+         [ -(Y[0][0]*Y[1][1]-Y[0][1]*Y[1][0])/Y[1][0]  ,-Y[0][0]/Y[1][0]]]
     return T
 
 def T_Deembed(TLinv, TMeas, TRinv):
-    a = TMeas[1][1]
-    b = TMeas[1][2]
-    c = TMeas[2][1]
-    d = TMeas[2][2]
-    T_dut = [[(a*L[1][1]+c*L[1][2])*R[1][1]+(b*L[1][1]+d*L[1][2])*R[2][1],(a*L[1][1]+c*L[1][2])*R[1][2]+(b*L[1][1]+d*L[1][2])*R[2][1]],
-             [(a*L[2][1]+c*L[2][2])*R[1][1]+(b*L[2][1]+d*L[2][2])*R[2][1],(a*L[2][1]+c*L[2][2])*R[1][2]+(b*L[1][1]+d*L[1][2])*R[2][1]]]
+    a = TMeas[0][0]
+    b = TMeas[0][1]
+    c = TMeas[1][0]
+    d = TMeas[1][1]
+    L = TLinv
+    R = TRinv
+    T_dut = [[(a*L[0][0]+c*L[0][1])*R[0][0]+(b*L[0][0]+d*L[0][1])*R[1][0],(a*L[0][0]+c*L[0][1])*R[0][1]+(b*L[0][0]+d*L[0][1])*R[1][0]],
+             [(a*L[1][0]+c*L[1][1])*R[0][0]+(b*L[1][0]+d*L[1][1])*R[1][0],(a*L[1][0]+c*L[1][1])*R[0][1]+(b*L[0][0]+d*L[0][1])*R[1][0]]]
     return T_dut
 
 def SfromT(T):
-    s11 = T[1][2]/T[2][2]
-    s12 = (T[1][1]-T[2][2])/T[2][2]
-    s21 = 1/T[2][2]
-    s22 = -T[2][1]/T[2][2]
+    s11 = T[0][1]/T[1][1]
+    s12 = (T[0][0]-T[1][1])/T[1][1]
+    s21 = 1/T[1][1]
+    s22 = -T[1][0]/T[1][1]
     S = [[s11,s12],
          [s21,s22]]
+    return S
 
 def TfromS(S):
-    A = -(S[1][1]*S[2][2]-S[1][2]S[2][1])/S[2][1]
-    B = S[1][1]/S[2][1]
-    C = -S[2][2]/S[2][1]
-    D = 1/S[2][1]
+    A = -(S[0][0]*S[1][1]-S[0][1]*S[1][0])/S[1][0]
+    B = S[0][0]/S[1][0]
+    C = -S[1][1]/S[1][0]
+    D = 1/S[1][0]
     T = [[A,B],[C,D]]
     return T
 
-#M y Thru deben ser matrices del mismo tamaño para utilizar esta función
+#M y Thru deben ser matrices del mismo tamano para utilizar esta funcion
 def DeEmbeddingSweep(tM,thru):
     S = []
-    for i in range(len(M)):
+    for i in range(len(tM)):
         YL = Y_getLpad(thru[i])
         YR = Y_getRpad(thru[i])
-        TL = inv(getTfromY(YL[i]))
-        TR = inv(getTfromY(YR[i]))
-        S.append(SfromT(T_Deembed(TL,tM[i],TR)))
+        TL = inv(getTfromY(YL))
+        TR = inv(getTfromY(YR))
+        x = T_Deembed(TL,tM[i],TR)
+        y = SfromT(x)
+        S.append(y)
     return S
 
 
@@ -106,6 +110,7 @@ for i in range(len(sM)):
     sM[i] = TfromS(sM[i])
 
 Sparam = DeEmbeddingSweep(sM, thru)
+
 
 #THIS SECTION PLOTS MAGNITUDES OF S11 IN FREQ
 
