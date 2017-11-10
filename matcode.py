@@ -46,6 +46,9 @@ def Y_getRpad_A(Y):
                [  2*Y[1][2] , Y[2][2] - Y[1][2] ]
     return Y_Rpad
 
+def getTfromY(Y):
+    T = [[,],[,]]
+
 #def Rsweep(A):
 
 
